@@ -54,16 +54,13 @@ class Login {
         //verifica se todos os campos estão preenchidos com strings
         this.cleanUp();
 
-        //verifica se o email é válido
+        //verifica se o email é válido e se a senha tem entre 3 e 50 caracteres
         if(!validator.isEmail(this.body.email) || this.body.password.length < 3 || this.body.password.length > 50) 
-            this.errors.push("Email e/ou senha inválido(s).");       
-    
-        //verifica se a senha tem entre 3 e 50 caracteres
-        // if() 
-        //     this.errors.push("A senha deve ter entre 3 e 50 caracteres.");
+            this.errors.push("Email e/ou senha inválido(s).");      
     }
 
     cleanUp() {
+        //verificando se tudo é string
         for(const key in this.body) {
             if(typeof this.body[key] !== 'string') {
                 this.body[key] = '';
