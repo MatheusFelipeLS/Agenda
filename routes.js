@@ -13,6 +13,7 @@ route.get('/', homeController.index);
 
 //rotas de login
 route.get('/login/index', loginController.index);
+route.get('/login/signup', loginController.signup);
 route.post('/login/register', loginController.register);
 route.post('/login/login', loginController.login);
 route.get('/login/logout', loginController.logout);

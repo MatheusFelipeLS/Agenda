@@ -5,6 +5,10 @@ exports.index = (req, res) => {
     return res.render('login');
 };
 
+exports.signup = (req, res) => {
+    return res.render('signup');
+}
+
 exports.register = async function(req, res) {
     try {
         const login = new Login(req.body);
