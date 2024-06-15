@@ -1,4 +1,5 @@
 const Contato = require('../models/contatoModel');
+const Login = require('../models/loginModel');
 
 exports.index = (req, res) => {
     res.render('contato', { contato: {} });
@@ -16,6 +17,9 @@ exports.register = async (req, res) => {
         }
     
         req.flash('success', 'Seu contato foi registrado');
+        const login = new Login(null, req.session.user.email, req.session.user.contatos);
+        await login.addOne(contato.contato._id);
+        req.session.user = login.user;
         req.session.save(() => res.redirect(`/contato/index/${contato.contato._id}`));
         return; 
     } catch(e) {
@@ -57,6 +61,9 @@ exports.edit = async function(req, res) {
 
 exports.delete = async function(req, res) {
     if(!req.params.id) return res.render('404');
+
+    const login = new Login(null, req.session.user.email, req.session.user.contatos);
+    await login.deleteOne(req.params.id);
 
     const contato = await Contato.delete(req.params.id);
 

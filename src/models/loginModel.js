@@ -4,16 +4,17 @@ const bcryptjs = require('bcryptjs');
 
 const LoginSchema = new mongoose.Schema({
     email: {type: String, required: true},
-    password: {type: String, required: true}
+    password: {type: String, required: true},
+    contatos: {type: Array, required: false},
 });
 
 const LoginModel = mongoose.model('Login', LoginSchema);
 
 class Login {
-    constructor(body) {
+    constructor(body, email=null, contatos=null) {
         this.body = body;
         this.errors = [];
-        this.user = null;
+        this.user = {email: email, contatos: contatos};
     }
 
     async login() {
@@ -27,7 +28,6 @@ class Login {
             this.user = null;
             return
         }
-
     }
 
     async register() {
@@ -50,17 +50,30 @@ class Login {
         return this.user;
     }
 
+
+    async addOne(id) {
+        this.user = await LoginModel.findOne({ email: this.user.email });
+        this.user.contatos.push(id);
+        this.user = await LoginModel.findByIdAndUpdate(this.user._id, this.user, { new: true});
+    }
+
+    async deleteOne(id) {
+        this.user = await LoginModel.findOne({ email: this.user.email });
+        this.user.contatos = this.user.contatos.filter(function(valor) {
+            if(String(valor) !== id) {
+                return valor;
+            }
+        });
+        this.user = await LoginModel.findByIdAndUpdate(this.user._id, this.user, { new: true});
+    }
+
     valida() {
         //verifica se todos os campos estão preenchidos com strings
         this.cleanUp();
 
-        //verifica se o email é válido
+        //verifica se o email é válido e se a senha tem entre 3 e 50 caracteres
         if(!validator.isEmail(this.body.email) || this.body.password.length < 3 || this.body.password.length > 50) 
             this.errors.push("Email e/ou senha inválido(s).");       
-    
-        //verifica se a senha tem entre 3 e 50 caracteres
-        // if() 
-        //     this.errors.push("A senha deve ter entre 3 e 50 caracteres.");
     }
 
     cleanUp() {
