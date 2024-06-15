@@ -23,7 +23,7 @@ exports.register = async function(req, res) {
         }
         req.flash('success', "Usuário criado com sucesso.");
         req.session.save(function() {
-            return res.redirect('back');
+            return res.redirect('/login/index');
         }); 
     } catch(e) {
         console.log(e);

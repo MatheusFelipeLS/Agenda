@@ -4,16 +4,17 @@ const bcryptjs = require('bcryptjs');
 
 const LoginSchema = new mongoose.Schema({
     email: {type: String, required: true},
-    password: {type: String, required: true}
+    password: {type: String, required: true},
+    contatos: {type: Array, required: false},
 });
 
 const LoginModel = mongoose.model('Login', LoginSchema);
 
 class Login {
-    constructor(body) {
+    constructor(body, email=null, contatos=null) {
         this.body = body;
         this.errors = [];
-        this.user = null;
+        this.user = {email: email, contatos: contatos};
     }
 
     async login() {
@@ -27,7 +28,6 @@ class Login {
             this.user = null;
             return
         }
-
     }
 
     async register() {
@@ -48,6 +48,23 @@ class Login {
         this.user = await LoginModel.findOne({ email: this.body.email });
         if(this.user) this.errors.push("Usuário já existe.");
         return this.user;
+    }
+
+
+    async addOne(id) {
+        this.user = await LoginModel.findOne({ email: this.user.email });
+        this.user.contatos.push(id);
+        this.user = await LoginModel.findByIdAndUpdate(this.user._id, this.user, { new: true});
+    }
+
+    async deleteOne(id) {
+        this.user = await LoginModel.findOne({ email: this.user.email });
+        this.user.contatos = this.user.contatos.filter(function(valor) {
+            if(String(valor) !== id) {
+                return valor;
+            }
+        });
+        this.user = await LoginModel.findByIdAndUpdate(this.user._id, this.user, { new: true});
     }
 
     valida() {
