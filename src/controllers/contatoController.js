@@ -65,6 +65,8 @@ exports.delete = async function(req, res) {
     const login = new Login(null, req.session.user.email, req.session.user.contatos);
     await login.deleteOne(req.params.id);
 
+    req.session.user.contatos = login.user.contatos;
+
     const contato = await Contato.delete(req.params.id);
 
     if(!contato) return res.render('404');
